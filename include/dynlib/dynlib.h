@@ -30,7 +30,7 @@ class DYNLIB_API Library
 public:
   Library() = delete;
   Library(const Library&) = delete;
-  Library(Library&&) = delete;
+  Library(Library&&);
   ~Library();
 
   explicit Library(const std::string& libname);
@@ -39,6 +39,9 @@ public:
   bool isLoaded() const;
 
   FunctionPointer resolve(const char* sym);
+
+  Library& operator=(const Library&) = delete;
+  Library& operator=(Library&&);
 
 private:
   std::unique_ptr<LibraryImpl> d;

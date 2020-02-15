@@ -45,8 +45,16 @@ public:
   }
 };
 
+Library::Library(Library&& other)
+  : d(std::move(other.d))
+{
+}
+
 Library::~Library()
 {
+  if (!d)
+    return;
+
 #if defined(OS_WINDOWS)
   if (d->loaded)
   {
@@ -96,6 +104,13 @@ FunctionPointer Library::resolve(const char* sym)
 #else
   return nullptr;
 #endif
+}
+
+Library& Library::operator=(Library&& other)
+{
+  d = std::move(other.d);
+
+  return *this;
 }
 
 } // namespace dynlib
