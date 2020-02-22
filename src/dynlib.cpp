@@ -68,6 +68,7 @@ Library::~Library()
   if (d->loaded)
   {
     FreeLibrary(d->system_library);
+    d->system_library = nullptr;
   }
 #else
   if (d->loaded)
@@ -92,6 +93,16 @@ bool Library::load()
 #if defined(OS_WINDOWS)
   d->system_library = LoadLibrary(d->libname.c_str());
   d->loaded = (d->system_library != nullptr);
+
+  if (!d->loaded)
+  {
+    DWORD error = GetLastError();
+    char buf[256];
+    FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+      NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+      buf, (sizeof(buf) / sizeof(char)), NULL);
+    d->error_string = buf;
+  }
 #else
   d->system_library = dlopen(d->libname.c_str(), RTLD_LAZY);
   d->loaded = (d->system_library != nullptr);
