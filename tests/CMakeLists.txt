@@ -1,6 +1,4 @@
 
-enable_testing()
-
 add_library(testlib SHARED "lib.cpp")
 set_target_properties(testlib PROPERTIES PREFIX "")
 

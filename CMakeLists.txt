@@ -39,4 +39,5 @@ target_compile_definitions(dynlib PUBLIC -DDYNLIB_COMPILE_LIBRARY)
 ###### tests, examples & benchmarks
 ##################################################################
 
+enable_testing()
 add_subdirectory(tests)
