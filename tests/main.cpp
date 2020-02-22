@@ -4,12 +4,17 @@
 
 #include "dynlib/dynlib.h"
 
+#include <iostream>
+
 int main()
 {
   dynlib::Library lib{ "testlib" };
 
   if (!lib.load())
-    return 1;
+  {
+      std::cout << lib.errorString() << std::endl;
+      return 1;
+  }
 
   dynlib::FunctionPointer say_hello = lib.resolve("say_hello");
 

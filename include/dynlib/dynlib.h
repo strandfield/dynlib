@@ -38,6 +38,8 @@ public:
   bool load();
   bool isLoaded() const;
 
+  const std::string& errorString() const;
+
   FunctionPointer resolve(const char* sym);
 
   Library& operator=(const Library&) = delete;

@@ -22,6 +22,10 @@ file(GLOB_RECURSE HDR_FILES
 add_library(dynlib ${HDR_FILES} ${SRC_FILES})
 target_include_directories(dynlib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
+if (NOT WIN32)
+  target_link_libraries(dynlib ${CMAKE_DL_LIBS})
+endif()
+
 foreach(_source IN ITEMS ${HDR_FILES} ${SRC_FILES})
     get_filename_component(_source_path "${_source}" PATH)
     file(RELATIVE_PATH _source_path_rel "${CMAKE_CURRENT_SOURCE_DIR}" "${_source_path}")
