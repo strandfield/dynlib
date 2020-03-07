@@ -114,7 +114,6 @@ bool Library::load()
       if(err)
       {
           d->error_string = err;
-          delete err;
       }
   }
 #endif
