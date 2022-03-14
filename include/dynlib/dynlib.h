@@ -37,6 +37,7 @@ public:
 
   bool load();
   bool isLoaded() const;
+  void unload();
 
   const std::string& errorString() const;
 

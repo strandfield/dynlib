@@ -61,22 +61,7 @@ Library::Library(Library&& other)
 
 Library::~Library()
 {
-  if (!d)
-    return;
-
-#if defined(OS_WINDOWS)
-  if (d->loaded)
-  {
-    FreeLibrary(d->system_library);
-    d->system_library = nullptr;
-  }
-#else
-  if (d->loaded)
-  {
-    dlclose(d->system_library);
-    d->system_library = nullptr;
-  }
-#endif
+ 
 }
 
 Library::Library(const std::string& libname)
@@ -124,6 +109,26 @@ bool Library::load()
 bool Library::isLoaded() const
 {
   return d->loaded;
+}
+
+void Library::unload()
+{
+  if (!d)
+    return;
+
+#if defined(OS_WINDOWS)
+  if (d->loaded)
+  {
+    FreeLibrary(d->system_library);
+    d->system_library = nullptr;
+  }
+#else
+  if (d->loaded)
+  {
+    dlclose(d->system_library);
+    d->system_library = nullptr;
+  }
+#endif
 }
 
 const std::string& Library::errorString() const
