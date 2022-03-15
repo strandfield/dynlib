@@ -20,6 +20,7 @@ namespace dynlib
 {
 
 #if defined(OS_WINDOWS)
+
 static void replace_slashes(std::string& str)
 {
   for (char& c : str)
@@ -28,7 +29,29 @@ static void replace_slashes(std::string& str)
       c = '\\';
   }
 }
-#endif
+
+#else
+
+static std::string add_lib_prefix(std::string libpath)
+{
+  size_t offset = libpath.rfind("/");
+
+  if (offset == std::string::npos)
+    return "lib" + libpath;
+
+  return libpath.substr(0, offset + 1) + "lib" + libpath.substr(offset + 1);
+}
+
+static void replace_all(std::string& inout, const std::string& what, const std::string& with)
+{
+  for (std::string::size_type pos(0); inout.npos != (pos = inout.find(what, pos)); pos += with.length())
+  {
+    inout.replace(pos, what.length(), with.data(), with.length());
+  }
+}
+
+#endif // defined(OS_WINDOWS)
+
 
 struct LibraryImpl
 {
@@ -50,6 +73,7 @@ public:
     replace_slashes(libname);
 #else
     libname.append(".so");
+    replace_all(libname, "//", "/");
 #endif
   }
 };
@@ -88,8 +112,17 @@ bool Library::load()
       buf, (sizeof(buf) / sizeof(char)), NULL);
     d->error_string = buf;
   }
+
 #else
+
   d->system_library = dlopen(d->libname.c_str(), RTLD_LAZY);
+  
+  if (d->system_library == nullptr)
+  {
+    std::string libpath = add_lib_prefix(d->libname);
+    d->system_library = dlopen(libpath.c_str(), RTLD_LAZY);
+  }
+
   d->loaded = (d->system_library != nullptr);
 
   if(!d->loaded)
@@ -101,6 +134,7 @@ bool Library::load()
           d->error_string = err;
       }
   }
+
 #endif
 
   return d->loaded;
